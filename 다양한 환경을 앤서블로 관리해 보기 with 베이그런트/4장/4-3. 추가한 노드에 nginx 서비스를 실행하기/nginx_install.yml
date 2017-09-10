@@ -1,0 +1,56 @@
+---
+- name: Install nginx on CentOS
+  hosts: CentOS
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: install epel-release
+      yum: name=epel-release state=latest
+    - name: install nginx web server
+      yum: name=nginx state=present
+    - name: Upload default index.html for web server
+      get_url: url=https://www.nginx.com dest=/usr/share/nginx/html/ mode=0644
+    - name: Start nginx web server
+      service: name=nginx state=started
+
+- name: Install nginx on Ubuntu
+  hosts: Ubuntu
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: install nginx web server
+      apt: pkg=nginx state=present update_cache=yes
+    - name: Upload default index.html for web server
+      get_url: url=https://www.nginx.com dest=/usr/share/nginx/html/ mode=0644 validate_certs=no
+
+- name: Install nginx on windows
+  hosts: Win
+  gather_facts: no
+
+  tasks:
+    - name: Download nginx
+      win_get_url:
+        url: http://nginx.org/download/nginx-1.12.1.zip
+        dest: C:\tmp\nginx-1.12.1.zip
+    - name: Create directory
+      win_file:
+        path: C:\nginx
+        state: directory
+    - name: Unzip nginx
+      win_unzip:
+        src: C:\tmp\nginx-1.12.1.zip
+        dest: C:\nginx
+    - name: Install NSSM
+      win_chocolatey:
+        name: nssm
+    - name: Download new index.html
+      win_get_url:
+        url: https://www.nginx.com
+        dest: C:\nginx\nginx-1.12.1\html\index.html
+    - name: Restart nginx service
+      win_nssm:
+        name: nginx
+        application: C:\nginx\nginx-1.12.1\nginx.exe
+        state: restarted

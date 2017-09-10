@@ -1,0 +1,16 @@
+---
+- name: Ansible_ssh_conf_4_CentOS
+  hosts: localhost
+  gather_facts: no
+  
+  tasks:
+    - name: PasswordAuthentication change from no to yes
+      replace:
+        dest: /etc/ssh/sshd_config
+        regexp: 'PasswordAuthentication no'
+        replace: 'PasswordAuthentication yes'
+        backup: yes
+    - name: sshd restart to apply "PasswordAuthentication"
+      service:
+        name: sshd
+        state: restarted
