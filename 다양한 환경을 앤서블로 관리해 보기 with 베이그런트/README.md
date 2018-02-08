@@ -1,2 +1,2 @@
 # Ansible 
-# Code Exmaple for course (udemy / inflearn)
+# Code Exmaple for course (Udemy / Inflearn)
