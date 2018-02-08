@@ -1,3 +1,2 @@
 # Ansible
-Ansible courses at Udemy
-Ansible courses at inflearn
+Ansible courses at Udemy & inflearn
