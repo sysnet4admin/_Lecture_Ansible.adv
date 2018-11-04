@@ -1,0 +1,29 @@
+---
+- name: Add NXOSv and ssh_key
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Add "/etc/ansible/hosts"
+      become: yes
+      lineinfile:
+        path: /etc/ansible/hosts
+        line: "{{ item }}"
+      with_items:
+        - "[NXOSv]"
+        - "192.168.1.201 ansible_user=admin ansible_connection=network_cli ansible_network_os=nxos"
+
+    - name: Generate sshkey
+      shell: "{{ item }}"
+      with_items:
+        - "ssh-keyscan 192.168.1.201 >> ~/.ssh/known_hosts"
+
+- name: nxos_ping
+  hosts: NXOSv
+  gather_facts: no
+
+  tasks:
+    - name: Ping test from NXOSv to ansible-server
+      nxos_ping:
+        dest: 192.168.1.10
+        vrf: management

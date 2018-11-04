@@ -1,0 +1,73 @@
+---
+- name: Setup tftp to backup NXOSv's running-config
+  hosts: localhost
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: install xinetd & tftp-server
+      yum:
+        name: ['xinetd', 'tftp-server']
+        state: present
+
+    - name: make tftp_shared directory
+      become: yes
+      become_user: vagrant
+      file:
+        path: /home/vagrant/tftp_shared
+        state: directory
+        mode: 0777
+
+    - name: replace tftp's config
+      replace:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.replace }}"
+      with_items:
+        - { path: "/etc/xinetd.d/tftp", regexp: "root", replace: "vagrant" }
+        - { path: "/etc/xinetd.d/tftp", regexp: "-s /var/lib/tftpboot", 
+                   replace: "-c -p -u vagrant -s /home/vagrant/tftp_shared" }
+    
+    - name: modify tftp's config 
+      lineinfile:
+        path: /etc/xinetd.d/tftp
+        regexp: 'disable'
+        line: 'disable = disable'
+
+    - name: modify tftp service's config
+      replace:
+        path: /usr/lib/systemd/system/tftp.service
+        regexp: '-s /var/lib/tftpboot'
+        replace: '-c -p -u vagrant -s /home/vagrant/tftp_shared'
+
+    - name: selinux change to permissive on ansible-server
+      selinux: policy=targeted state=permissive
+
+    - name: service daemon restart
+      systemd:
+        state: restarted
+        daemon_reload: yes
+        name: tftp
+
+    - name: xinetd service restart
+      service:
+        name: xinetd
+        state: restarted
+
+
+- name: Request to backup NXOSv's running-config
+  hosts: NXOSv
+  gather_facts: no
+  tasks:
+    - name: running-config backup 
+      nxos_command:
+        commands: 'copy running-config tftp://192.168.1.10/n9kv-running-config#1 vrf management'
+
+        
+- name: Selinux restore on ansible-server
+  hosts: localhost
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: selinux change to enforcing
+      selinux: policy=targeted state=enforcing

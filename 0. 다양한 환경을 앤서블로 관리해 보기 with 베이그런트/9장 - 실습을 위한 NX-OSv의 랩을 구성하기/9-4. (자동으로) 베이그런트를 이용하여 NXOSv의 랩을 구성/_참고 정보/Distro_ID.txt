@@ -1,0 +1,54 @@
+
+[vagrant@ansible-svr4nxos distro]$ ansible --version
+ansible 2.8.0
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = [u'/home/vagrant/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python2.7/site-packages/ansible
+  executable location = /usr/bin/ansible
+  python version = 2.7.5 (default, Oct 30 2018, 23:45:53) [GCC 4.8.5 20150623 (Red Hat 4.8.5-36)]
+
+Location:  
+ /usr/lib/python2.7/site-packages/ansible/module_utils/distro/_distro.py
+ 
+ 177 def id():
+ 178     """
+ 179     Return the distro ID of the current distribution, as a
+ 180     machine-readable string.
+ 181
+ 182     For a number of OS distributions, the returned distro ID value is
+ 183     *reliable*, in the sense that it is documented and that it does not change
+ 184     across releases of the distribution.
+ 185
+ 186     This package maintains the following reliable distro ID values:
+ 187
+ 188     ==============  =========================================
+ 189     Distro ID       Distribution
+ 190     ==============  =========================================
+ 191     "ubuntu"        Ubuntu
+ 192     "debian"        Debian
+ 193     "rhel"          RedHat Enterprise Linux
+ 194     "centos"        CentOS
+ 195     "fedora"        Fedora
+ 196     "sles"          SUSE Linux Enterprise Server
+ 197     "opensuse"      openSUSE
+ 198     "amazon"        Amazon Linux
+ 199     "arch"          Arch Linux
+ 200     "cloudlinux"    CloudLinux OS
+ 201     "exherbo"       Exherbo Linux
+ 202     "gentoo"        GenToo Linux
+ 203     "ibm_powerkvm"  IBM PowerKVM
+ 204     "kvmibm"        KVM for IBM z Systems
+ 205     "linuxmint"     Linux Mint
+ 206     "mageia"        Mageia
+ 207     "mandriva"      Mandriva Linux
+ 208     "parallels"     Parallels
+ 209     "pidora"        Pidora
+ 210     "raspbian"      Raspbian
+ 211     "oracle"        Oracle Linux (and Oracle Enterprise Linux)
+ 212     "scientific"    Scientific Linux
+ 213     "slackware"     Slackware
+ 214     "xenserver"     XenServer
+ 215     "openbsd"       OpenBSD
+ 216     "netbsd"        NetBSD
+ 217     "freebsd"       FreeBSD
+ 218     ==============  =========================================

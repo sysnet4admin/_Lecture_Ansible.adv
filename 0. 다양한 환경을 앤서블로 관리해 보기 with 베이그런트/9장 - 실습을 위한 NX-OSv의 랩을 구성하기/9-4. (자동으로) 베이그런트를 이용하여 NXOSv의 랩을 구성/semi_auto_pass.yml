@@ -1,0 +1,28 @@
+---
+- name: Create known_hosts for the each of NX-OSv 
+  hosts: NXOSv
+  connection: local
+  serial: 1
+  gather_facts: no  
+    
+  tasks:
+    - name: ssh-keyscan for known_hosts file
+      command: /usr/bin/ssh-keyscan -t ssh-rsa {{ ansible_host }}
+      register: keyscan
+
+    - name: input key
+      lineinfile:      
+        path: ~/.ssh/known_hosts
+        line: "{{ item }}"
+        create: yes     
+      with_items:
+        - "{{ keyscan.stdout_lines }}"
+        
+    - name: Add "/etc/ansible/hosts" for network_connection 
+      become: yes
+      blockinfile: 
+        path: /etc/ansible/hosts
+        block: |
+          [NXOSv]
+          192.168.1.251 ansible_user=admin ansible_connection=network_cli ansible_network_os=nxos
+          192.168.1.252 ansible_user=admin ansible_connection=network_cli ansible_network_os=nxos

@@ -1,0 +1,13 @@
+---
+- name: Setup NXOSv timezone with ntp configuration
+  hosts: NXOSv
+  gather_facts: no
+
+  tasks:
+    - name: ntp configuration
+      nxos_config:
+        lines: 'ntp server 192.168.1.10 use-vrf default'
+    - name: timezone to UTC 9 0
+      nxos_config:
+        lines: 'clock  timezone UTC 9 0'
+        save_when: modified

@@ -1,0 +1,9 @@
+---
+- name: Setup linux timezone
+  hosts: CentOS:Ubuntu
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: set timezone to Asia/Seoul
+      timezone: name=Asia/Seoul

@@ -1,0 +1,73 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  #NXOSv 7 version 
+  config.vm.define "ansible-nxosv251" do |cfg|
+     cfg.vm.box = "sysnet4admin/nxosv_v7"
+	 cfg.ssh.insert_key = false 
+	 cfg.vm.boot_timeout = 480
+	 cfg.vm.guest = :freebsd
+	 cfg.vbguest.auto_update = false
+	 cfg.vm.network "forwarded_port", guest: 22, host: 60251, auto_correct: true, id: "ssh"
+	 cfg.vm.network "public_network"
+	 cfg.vm.provision "shell", inline: "sudo ifconfig Eth1-1 inet 192.168.1.251 netmask 255.255.255.0"
+	 cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+	 
+	 #VM name & HW config
+     cfg.vm.provider "virtualbox" do |vb|
+	   vb.name = "Ansible-NXOSv251(github_SysNet4Admin)"
+	   vb.customize ["modifyvm", :id, "--groups", "/NXOSv_Automation(github-SysNet4Admin)"]
+       vb.customize ["modifyvm", :id, "--uartmode1", "server", '\\\.\pipe\nxosv251']
+	   vb.customize ['modifyvm', :id,'--nicpromisc2','allow-all']
+       vb.customize ['modifyvm', :id,'--nicpromisc3','allow-all']
+       vb.customize ['modifyvm', :id,'--nicpromisc4','allow-all']
+	 end 
+  end	
+  #NXOSv 9 version 
+  config.vm.define "ansible-nxosv252" do |cfg|
+     cfg.vm.box = "sysnet4admin/nxosv_v9"
+	 cfg.ssh.insert_key = false 
+	 cfg.vm.boot_timeout = 480
+	 cfg.vm.guest = :freebsd
+	 cfg.vbguest.auto_update = false
+	 cfg.vm.network "forwarded_port", guest: 22, host: 60252, auto_correct: true, id: "ssh"
+	 cfg.vm.network "public_network"
+	 cfg.vm.provision "shell", inline: "sudo ifconfig Eth1-1 inet 192.168.1.252 netmask 255.255.255.0"
+	 cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+	 
+	 #VM name & HW config
+     cfg.vm.provider "virtualbox" do |vb|
+	   vb.name = "Ansible-NXOSv252(github_SysNet4Admin)"
+	   vb.customize ["modifyvm", :id, "--groups", "/NXOSv_Automation(github-SysNet4Admin)"]
+       vb.customize ["modifyvm", :id, "--uartmode1", "server", '\\\.\pipe\nxosv252']
+	   vb.customize ['modifyvm', :id,'--nicpromisc2','allow-all']
+       vb.customize ['modifyvm', :id,'--nicpromisc3','allow-all']
+       vb.customize ['modifyvm', :id,'--nicpromisc4','allow-all']
+	 end 
+  end
+
+  #=========================#
+  # Ansible Server for NXOSv #
+  #=========================#
+  
+  config.vm.define "ansible-svr4nxosv" do |cfg|
+    cfg.vm.box = "centos/7"
+	cfg.vm.host_name = "ansible-svr4nxosv"
+	cfg.vm.network "public_network", ip: "192.168.1.10"
+	cfg.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true, id: "ssh"
+	cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+	cfg.vm.provision "shell", inline: "yum install epel-release -y"
+	cfg.vm.provision "shell", inline: "yum install ansible -y"
+	cfg.vm.provision "file", source: "ansible_env_ready.yml", destination: "ansible_env_ready.yml"
+	cfg.vm.provision "shell", inline: "ansible-playbook ansible_env_ready.yml"
+    cfg.vm.provision "file", source: "semi_auto_pass.yml", destination: "semi_auto_pass.yml"
+	cfg.vm.provision "shell", inline: "ansible-playbook semi_auto_pass.yml", privileged: false
+	cfg.vm.provider "virtualbox" do |vb|
+	  vb.name = "Ansible-SVR4NXOSv(github_SysNet4Admin)"
+	  vb.customize ["modifyvm", :id, "--groups", "/NXOSv_Automation(github-SysNet4Admin)"]
+	end
+  end
+  
+end
