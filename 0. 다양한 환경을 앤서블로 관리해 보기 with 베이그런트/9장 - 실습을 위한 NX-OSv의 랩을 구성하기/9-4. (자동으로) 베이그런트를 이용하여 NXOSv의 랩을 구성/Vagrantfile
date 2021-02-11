@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
     if VAGRANT_COMMAND = "up"
        cfg.ssh.username = "admin"
        cfg.ssh.password = "vagrant"
-       cfg.ssh.shell = "sleep 120 ; conf t ; ho nxosv251 ; int e1/1 ; no sw ; ip ad 192.168.1.251/24"
+       cfg.ssh.shell = "sleep 120 ; conf t ; ho nxosv251 ; int e1/1 ; no sw ; ip ad 192.168.1.251/24 ; wr"
     end
 
     #VM name & HW config
@@ -51,7 +51,7 @@ Vagrant.configure("2") do |config|
     if VAGRANT_COMMAND = "up"
        cfg.ssh.username = "admin"
        cfg.ssh.password = "vagrant"
-       cfg.ssh.shell = "sleep 240 ; conf t ; ho nxosv252 ; int e1/1 ; no sw ; ip ad 192.168.1.252/24"
+       cfg.ssh.shell = "sleep 240 ; conf t ; ho nxosv252 ; int e1/1 ; no sw ; ip ad 192.168.1.252/24 ; wr"
     end
 
     #VM name & HW config
