@@ -9,12 +9,20 @@ Vagrant.configure("2") do |config|
     cfg.ssh.insert_key = false 
     cfg.vm.boot_timeout = 480
     cfg.vm.guest = :freebsd
-    cfg.vbguest.auto_update = false
+    cfg.vm.base_mac = "F000F251F000" #for CDP test
+    cfg.vbguest.auto_update = false 
     cfg.vm.network "forwarded_port", guest: 22, host: 60251, auto_correct: true, id: "ssh"
-    cfg.vm.network "public_network"
-    cfg.vm.provision "shell", inline: "sudo ifconfig Eth1-1 inet 192.168.1.251 netmask 255.255.255.0"
+    cfg.vm.network "public_network", auto_config: false # auto_config should need to avoid ssh_timeout
     cfg.vm.synced_folder "../data", "/vagrant", disabled: true
- 
+    
+    #instead of 'ifconfig Eth1-1 inet 192.168.1.251 netmask 255.255.255.0'
+    #nxos7 lighter than nxos9. so sleep 120. It depends on the system.
+    if VAGRANT_COMMAND = "up"
+       cfg.ssh.username = "admin"
+       cfg.ssh.password = "vagrant"
+       cfg.ssh.shell = "sleep 120 ; conf t ; ho nxosv251 ; int e1/1 ; no sw ; ip ad 192.168.1.251/24"
+    end
+
     #VM name & HW config
     cfg.vm.provider "virtualbox" do |vb|
       vb.name = "Ansible-NXOSv251(github_SysNet4Admin)"
@@ -25,22 +33,32 @@ Vagrant.configure("2") do |config|
       vb.customize ['modifyvm', :id,'--nicpromisc4','allow-all']
     end 
   end
+  
   #NXOSv 9 version 
   config.vm.define "ansible-nxosv252" do |cfg|
     cfg.vm.box = "sysnet4admin/nxosv_v9"
     cfg.ssh.insert_key = false 
-    cfg.vm.boot_timeout = 480
+    cfg.vm.boot_timeout = 960
     cfg.vm.guest = :freebsd
-    cfg.vbguest.auto_update = false
+    cfg.vm.base_mac = "F000F252F000" #for CDP test
+    #cfg.vbguest.auto_update = false
     cfg.vm.network "forwarded_port", guest: 22, host: 60252, auto_correct: true, id: "ssh"
-    cfg.vm.network "public_network"
-    cfg.vm.provision "shell", inline: "sudo ifconfig Eth1-1 inet 192.168.1.252 netmask 255.255.255.0"
+    cfg.vm.network "public_network", auto_config: false # auto_config should need to avoid ssh_timeout
     cfg.vm.synced_folder "../data", "/vagrant", disabled: true
- 
+
+    #instead of 'ifconfig Eth1-1 inet 192.168.1.252 netmask 255.255.255.0'
+    #nxos9 heavier than nxos7. so sleep 240. It depends on the system.
+    if VAGRANT_COMMAND = "up"
+       cfg.ssh.username = "admin"
+       cfg.ssh.password = "vagrant"
+       cfg.ssh.shell = "sleep 240 ; conf t ; ho nxosv252 ; int e1/1 ; no sw ; ip ad 192.168.1.252/24"
+    end
+
     #VM name & HW config
     cfg.vm.provider "virtualbox" do |vb|
       vb.name = "Ansible-NXOSv252(github_SysNet4Admin)"
       vb.customize ["modifyvm", :id, "--groups", "/NXOSv_Automation(github-SysNet4Admin)"]
+      vb.customize ["modifyvm", :id, "--uart1", "0x251", "1"]
       vb.customize ["modifyvm", :id, "--uartmode1", "server", '\\\.\pipe\nxosv252']
       vb.customize ['modifyvm', :id,'--nicpromisc2','allow-all']
       vb.customize ['modifyvm', :id,'--nicpromisc3','allow-all']
@@ -48,9 +66,9 @@ Vagrant.configure("2") do |config|
     end 
   end
 
-  #=========================#
+  #==========================#
   # Ansible Server for NXOSv #
-  #=========================#
+  #==========================#
   
   config.vm.define "ansible-svr4nxosv" do |cfg|
     cfg.vm.box = "centos/7"
