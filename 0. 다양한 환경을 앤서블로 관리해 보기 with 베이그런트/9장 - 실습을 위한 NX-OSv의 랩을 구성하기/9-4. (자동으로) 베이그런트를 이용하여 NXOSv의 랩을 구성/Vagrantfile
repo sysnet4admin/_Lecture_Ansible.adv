@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
     if VAGRANT_COMMAND = "up"
        cfg.ssh.username = "admin"
        cfg.ssh.password = "vagrant"
-       cfg.ssh.shell = "sleep 120 ; conf t ; ho nxosv251 ; int e1/1 ; no sw ; ip ad 192.168.1.251/24 ; wr"
+       cfg.ssh.shell = "sleep 120 ; conf t ; ho nxosv251 ; int e1/1 ; no sw ; ip ad 192.168.1.251/24 ; copy r s"
     end
 
     #VM name & HW config
@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.boot_timeout = 960
     cfg.vm.guest = :freebsd
     cfg.vm.base_mac = "F000F252F000" #for CDP test
-    #cfg.vbguest.auto_update = false
+    cfg.vbguest.auto_update = false
     cfg.vm.network "forwarded_port", guest: 22, host: 60252, auto_correct: true, id: "ssh"
     cfg.vm.network "public_network", auto_config: false # auto_config should need to avoid ssh_timeout
     cfg.vm.synced_folder "../data", "/vagrant", disabled: true
@@ -51,7 +51,7 @@ Vagrant.configure("2") do |config|
     if VAGRANT_COMMAND = "up"
        cfg.ssh.username = "admin"
        cfg.ssh.password = "vagrant"
-       cfg.ssh.shell = "sleep 240 ; conf t ; ho nxosv252 ; int e1/1 ; no sw ; ip ad 192.168.1.252/24 ; wr"
+       cfg.ssh.shell = "sleep 240 ; conf t ; ho nxosv252 ; int e1/1 ; no sw ; ip ad 192.168.1.252/24 ; copy r s"
     end
 
     #VM name & HW config
