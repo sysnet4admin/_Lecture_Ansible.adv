@@ -30,16 +30,10 @@
            [Win]
            node05 ansible_connection=winrm ansible_ssh_user=vagrant ansible_ssh_port=5985"
     
-    - name: Install pip
+    - name: Install python2-winrm 
       yum:
-        name: python-pip
+        name: python2-winrm
         state: present
-    
-    - name: Install pywinrm
-      pip:
-        name: pywinrm
-        state: present
-    
     
     - name: Install sshpass for Authentication
       yum:
